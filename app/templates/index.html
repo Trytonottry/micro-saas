@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>LeadPing SaaS</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>LeadPing SaaS</h1>
+    <p>Сервис авто-уведомлений для малого бизнеса: отправка напоминаний клиентам через API.</p>
+    <h2>Тарифы</h2>
+    <div class="plans">
+      {% for plan in plans %}
+      <div class="plan">
+        <h3>{{ plan.name|capitalize }}</h3>
+        <p>Лимит: {{ plan.monthly_limit }} уведомлений/мес</p>
+        <p>Цена: {{ plan.price_rub }} ₽/мес</p>
+      </div>
+      {% endfor %}
+    </div>
+    <p>API docs: <a href="/docs">/docs</a></p>
+    <p>Health: <a href="/health">/health</a></p>
+    <p>Metrics: <a href="/metrics">/metrics</a></p>
+  </main>
+</body>
+</html>
