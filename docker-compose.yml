@@ -1,0 +1,76 @@
+services:
+  app:
+    build: .
+    container_name: leadping_app
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - db
+      - redis
+    command: >
+      sh -c "alembic upgrade head && python scripts/bootstrap.py && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./:/code
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  worker:
+    build: .
+    container_name: leadping_worker
+    restart: unless-stopped
+    env_file: .env
+    depends_on:
+      - redis
+      - db
+    command: python -m app.workers.worker
+    volumes:
+      - ./:/code
+
+  db:
+    image: postgres:16-alpine
+    container_name: leadping_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: leadping
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: leadping_redis
+    restart: unless-stopped
+    command: redis-server --save 60 1000
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: leadping_prometheus
+    restart: unless-stopped
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    ports:
+      - "9090:9090"
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
