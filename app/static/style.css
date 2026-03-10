@@ -1,0 +1,5 @@
+body { font-family: Arial, sans-serif; background: #f6f8fb; margin: 0; color: #222; }
+.container { max-width: 900px; margin: 40px auto; padding: 24px; background: white; border-radius: 12px; }
+.plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+.plan { border: 1px solid #d9e0ea; border-radius: 8px; padding: 16px; background: #fbfdff; }
+a { color: #2563eb; }
